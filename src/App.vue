@@ -1,31 +1,12 @@
 <template>
   <div class="app-container">
-    <Sidebar 
-      :active-section="activeSection" 
-      :user="currentUser"
-      @section-changed="handleSectionChange"
-    />
-    
-    <MainContent 
-      :active-section="activeSection"
-      :companies="companies"
-      :contacts="contacts"
-      :leads="leads"
-      @open-modal="handleOpenModal"
-      @delete-item="handleDeleteItem"
-    />
-    
-    <FormModal
-      v-if="showModal"
-      :show="showModal"
-      :mode="modalMode"
-      :section="activeSection"
-      :item="currentItem"
-      :companies="companies"
-      :contacts="contacts"
-      @close="handleCloseModal"
-      @save="handleSaveItem"
-    />
+    <Sidebar :active-section="activeSection" :user="currentUser" @section-changed="handleSectionChange" />
+
+    <MainContent :active-section="activeSection" :companies="companies" :contacts="contacts" :leads="leads"
+      @open-modal="handleOpenModal" @delete-item="handleDeleteItem" @section-changed="handleSectionChange" />
+
+    <FormModal v-if="showModal" :show="showModal" :mode="modalMode" :section="activeSection" :item="currentItem"
+      :companies="companies" :contacts="contacts" @close="handleCloseModal" @save="handleSaveItem" />
   </div>
 </template>
 
@@ -38,14 +19,14 @@ import api from './services/api'
 import './assets/main.css'
 
 const currentUser = ref({
-  id: 2,
+  id: 1,
   name: 'Admin User',
   email: 'admin@example.com',
   role: 'Administrator',
   avatar: 'A'
 })
 
-const activeSection = ref('companies') 
+const activeSection = ref('dashboard')
 const showModal = ref(false)
 const modalMode = ref('create')
 const currentItem = reactive({})
@@ -62,7 +43,7 @@ const fetchData = async () => {
       api.contacts.getAll(),
       api.leads.getAll(),
     ]);
-    
+
     if (companiesRes.status >= 200 && companiesRes.status < 300) {
       companies.value = companiesRes.data || [];
     }
@@ -89,7 +70,7 @@ const handleSectionChange = (section) => {
 const handleOpenModal = (mode, item = null) => {
   modalMode.value = mode
   showModal.value = true
-  
+
   Object.keys(currentItem).forEach(key => delete currentItem[key])
   if (mode === 'edit' && item) {
     Object.assign(currentItem, { ...item })
@@ -113,9 +94,9 @@ const handleSaveItem = async (itemData) => {
     } else {
       response = await api[activeSection.value].update(itemData.id, itemData);
     }
-    
+
     if (response.status >= 200 && response.status < 300) {
-      await fetchData(); 
+      await fetchData();
       handleCloseModal();
       alert('Item saved successfully!');
     } else {
@@ -133,7 +114,7 @@ const handleDeleteItem = async (id) => {
     try {
       const response = await api[activeSection.value].delete(id);
       if (response.status >= 200 && response.status < 300) {
-        await fetchData(); 
+        await fetchData();
         alert('Item deleted successfully!');
       } else {
         console.error('Failed to delete item:', response.message);

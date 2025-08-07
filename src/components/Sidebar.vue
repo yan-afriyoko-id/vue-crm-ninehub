@@ -48,6 +48,7 @@ defineProps({
 defineEmits(['section-changed'])
 
 const menuItems = [
+  { id: 'dashboard', label: 'Dashboard', icon: HomeIcon },
   { id: 'companies', label: 'Companies', icon: BuildingIcon },
   { id: 'contacts', label: 'Contacts', icon: UsersIcon },
   { id: 'leads', label: 'Leads', icon: BriefcaseIcon }
